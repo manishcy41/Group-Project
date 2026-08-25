@@ -17,6 +17,7 @@ class ShoppingListManager:
             if item["name"].lower() == name.lower():
                 item["quantity"] += quantity
                 item["price"] = float(price)
+                self.budget -= total_cost
 
                 self.budget -= total_cost
 
@@ -49,6 +50,33 @@ class ShoppingListManager:
                 self.budget += refund
 
                 removed = self.items.pop(index)
+                self.history.append(
+                    f"Removed {removed['name']} and refunded {refund}."
+                )
+                return True
+
+        return False
+
+    # Extra Feature: Search for an item
+    def search_item(self, name):
+        for item in self.items:
+            if item["name"].lower() == name.lower():
+                cost = item["price"] * item["quantity"]
+
+                print("=== Item Found ===")
+                print(f"Name: {item['name']}")
+                print(f"Category: {item['category']}")
+                print(f"Price: ${item['price']:.2f}")
+                print(f"Quantity: {item['quantity']}")
+                print(f"Total Cost: ${cost:.2f}")
+
+                return True
+
+        print(f"{name} is not in the shopping list.")
+        return False
+
+    def generate_summary(self):
+        total_items = sum(item["quantity"] for item in self.items)
 
                 self.history.append(
                     f"Removed {removed['name']} and refunded ${refund:.2f}."
@@ -115,6 +143,7 @@ class ShoppingListManager:
             for item in self.items
         )
 
+        print("=== Shopping Summary ===")
         print("\n=== Shopping Summary ===")
 
         print(f"Total Unique Items: {len(self.items)}")
@@ -130,6 +159,13 @@ class ShoppingListManager:
         for item in self.items:
 
             cost = item["price"] * item["quantity"]
+
+            print(
+                f"- {item['quantity']}x {item['name']} "
+                f"({item['category']}) @ "
+                f"${item['price']:.2f} each = ${cost:.2f}"
+            )
+
 
             print(
                 f"- {item['quantity']}x "
@@ -157,6 +193,7 @@ manager.add_item("Apples", 2.50, 4, "Produce")
 manager.add_item("Milk", 3.20, 2, "Dairy")
 
 manager.add_item("Steak", 25.00, 3, "Meat")
+manager.add_item("Apples", 2.50, 2, "Produce")
 
 # Update existing item
 manager.add_item("Apples", 2.50, 2, "Produce")
@@ -167,6 +204,8 @@ manager.remove_item("Milk")
 # Add another item
 manager.add_item("Bread", 4.00, 1, "Bakery")
 
+# Extra feature: Search for an item
+manager.search_item("Apples")
 # NEW FEATURE
 # Apply 10% discount to Steak
 manager.apply_discount("Steak", 10)
